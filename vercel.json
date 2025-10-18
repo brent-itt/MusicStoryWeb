@@ -1,0 +1,8 @@
+{
+    "rewrites": [
+        {
+            "source": "/explore",
+            "destination": "/explore.html"
+        }
+    ]
+}
