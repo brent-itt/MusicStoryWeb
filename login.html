@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Musicstory</title>
+    <link rel="stylesheet" href="explore.css">
+    <style>
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 40px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .form-group label {
+            font-weight: 600;
+            color: #333;
+        }
+        .form-group input {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #ff6b6b;
+        }
+        .btn-login {
+            padding: 14px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .btn-login:hover {
+            background: #ee5a5a;
+        }
+        .toggle-auth {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+        .toggle-auth a {
+            color: #ff6b6b;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 12px;
+            border-radius: 5px;
+            display: none;
+        }
+        .success-message {
+            background: #efe;
+            color: #3c3;
+            padding: 12px;
+            border-radius: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">
+                <h1>Musicstory</h1>
+            </div>
+            <nav class="navigation">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="explore.html" class="nav-link">Explore</a>
+                <a href="hits.html" class="nav-link">Top hits</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="login-container">
+        <h2 id="form-title">Login to Musicstory</h2>
+        <div id="error-message" class="error-message"></div>
+        <div id="success-message" class="success-message"></div>
+        
+        <form class="login-form" id="auth-form">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required placeholder="your@email.com">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required placeholder="••••••••" minlength="6">
+            </div>
+            <button type="submit" class="btn-login" id="submit-btn">Login</button>
+        </form>
+        
+        <div class="toggle-auth">
+            <span id="toggle-text">Don't have an account? <a href="#" id="toggle-link">Sign up</a></span>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2025 Musicstory. Celebrating Filipino Music.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://ytfgpayqcnodpoqgbxcg.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl0ZmdwYXlxY25vZHBvcWdieGNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM3MDUyMzQsImV4cCI6MjA3OTI4MTIzNH0.Hy7eJkL-u_pVoT_QqHhgeAIdFe620y7IYlITed9So6o';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let isLoginMode = true;
+
+        const formTitle = document.getElementById('form-title');
+        const submitBtn = document.getElementById('submit-btn');
+        const toggleText = document.getElementById('toggle-text');
+        const toggleLink = document.getElementById('toggle-link');
+        const authForm = document.getElementById('auth-form');
+        const errorMessage = document.getElementById('error-message');
+        const successMessage = document.getElementById('success-message');
+
+        // Check if user is already logged in
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session) {
+                window.location.href = 'explore.html';
+            }
+        });
+
+        toggleLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            isLoginMode = !isLoginMode;
+            
+            if (isLoginMode) {
+                formTitle.textContent = 'Login to Musicstory';
+                submitBtn.textContent = 'Login';
+                toggleText.innerHTML = 'Don\'t have an account? <a href="#" id="toggle-link">Sign up</a>';
+            } else {
+                formTitle.textContent = 'Create Account';
+                submitBtn.textContent = 'Sign Up';
+                toggleText.innerHTML = 'Already have an account? <a href="#" id="toggle-link">Login</a>';
+            }
+            
+            // Re-attach event listener to the new link
+            document.getElementById('toggle-link').addEventListener('click', arguments.callee);
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+        });
+
+        authForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Processing...';
+
+            try {
+                if (isLoginMode) {
+                    // Login
+                    const { data, error } = await supabase.auth.signInWithPassword({
+                        email: email,
+                        password: password
+                    });
+
+                    if (error) throw error;
+
+                    successMessage.textContent = 'Login successful! Redirecting...';
+                    successMessage.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        window.location.href = 'explore.html';
+                    }, 1000);
+
+                } else {
+                    // Sign up
+                    const { data, error } = await supabase.auth.signUp({
+                        email: email,
+                        password: password
+                    });
+
+                    if (error) throw error;
+
+                    successMessage.textContent = 'Account created! You can now login.';
+                    successMessage.style.display = 'block';
+                    
+                    // Switch to login mode after 2 seconds
+                    setTimeout(() => {
+                        isLoginMode = true;
+                        formTitle.textContent = 'Login to Musicstory';
+                        submitBtn.textContent = 'Login';
+                        toggleText.innerHTML = 'Don\'t have an account? <a href="#" id="toggle-link">Sign up</a>';
+                        document.getElementById('toggle-link').addEventListener('click', toggleLink.onclick);
+                        successMessage.style.display = 'none';
+                    }, 2000);
+                }
+            } catch (error) {
+                errorMessage.textContent = error.message;
+                errorMessage.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.textContent = isLoginMode ? 'Login' : 'Sign Up';
+            }
+        });
+    </script>
+</body>
+</html>
