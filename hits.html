@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top Hits in Philippines - Musicstory</title>
+    <link rel="stylesheet" href="hits.css">
+</head>
+<body>
+    <!-- Header/Navigation -->
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">
+                <h1>Musicstory</h1>
+            </div>
+            <nav class="navigation">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="explore.html" class="nav-link">Explore</a>
+                <a href="hits.html" class="nav-link active">Top hits</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title">Top Hits in Philippines</h1>
+            <p class="hero-description">
+                Discover the most popular Filipino songs that have touched hearts and made history in Philippine music.
+            </p>
+        </div>
+    </section>
+
+    <!-- Top Hits Section -->
+    <section class="hits-section">
+        <div class="container">
+            <div class="source-info">
+                <p>Ranked by Community Likes</p>
+            </div>
+            
+            <!-- Hit Songs List -->
+            <div class="hits-list" id="hits-list">
+                <!-- Songs will be dynamically loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2025 Musicstory. Celebrating Filipino Music.</p>
+    </footer>
+
+    <script>
+        // Song data with total likes tracking
+        const songs = [
+            {
+                id: 'lovestory',
+                name: 'Love Story',
+                artist: 'Gloc 9',
+                image: './pics/gloc.jpg',
+                spotifyLink: 'https://open.spotify.com/search/Love%20Story%20Gloc%209'
+            },
+            {
+                id: 'pahina',
+                name: 'Pahina',
+                artist: 'Cup of Joe',
+                image: './pics/OIP.jpeg',
+                spotifyLink: 'https://open.spotify.com/track/3OFExOxHCazDxqgb04VVZs'
+            }
+        ];
+
+        function getTotalLikes(songId) {
+            const likes = localStorage.getItem(`song_likes_${songId}`);
+            if (!likes) return 0;
+            
+            const likesData = JSON.parse(likes);
+            return likesData.count || 0;
+        }
+
+        function loadTopHits() {
+            const hitsList = document.getElementById('hits-list');
+            
+            // Calculate total likes for each song
+            const songsWithLikes = songs.map(song => ({
+                ...song,
+                totalLikes: getTotalLikes(song.id)
+            }));
+            
+            // Sort by total likes (descending)
+            songsWithLikes.sort((a, b) => b.totalLikes - a.totalLikes);
+            
+            // Generate HTML for top 10 songs
+            const hitsHTML = songsWithLikes.map((song, index) => `
+                <div class="hit-item">
+                    <div class="rank">${index + 1}</div>
+                    <div class="song-cover">
+                        <img src="${song.image}" alt="${song.name} by ${song.artist}" onerror="this.src='https://via.placeholder.com/80x80?text=${encodeURIComponent(song.name)}'" />
+                    </div>
+                    <div class="song-details">
+                        <h3 class="song-name">${song.name}</h3>
+                        <p class="artist-name">By ${song.artist}</p>
+                        <p class="streams">❤️  ${song.totalLikes} total likes</p>
+                        <a href="${song.spotifyLink}" target="_blank" class="spotify-link">Listen on Spotify</a>
+                    </div>
+                </div>
+            `).join('');
+            
+            hitsList.innerHTML = hitsHTML || '<p class="no-hits">No songs ranked yet. Start liking songs in the Explore page!</p>';
+        }
+
+        // Load top hits when page loads
+        window.addEventListener('DOMContentLoaded', loadTopHits);
+    </script>
+</body>
+</html>

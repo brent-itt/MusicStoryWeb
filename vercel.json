@@ -1,8 +1,24 @@
 {
     "routes": [
         {
-            "source": "/api/(.*)",
-            "destination": "/api/index.js"
+            "source": "/",
+            "destination": "/index.html"
+        },
+        {
+            "source": "/explore",
+            "destination": "/explore.html"
+        },
+        {
+            "source": "/hits",
+            "destination": "/hits.html"
+        },
+        {
+            "source": "/home",
+            "destination": "/index.html"
+        },
+        {
+            "source": "/pics/(.*)",
+            "destination": "/pics/$1"
         }
     ]
 }

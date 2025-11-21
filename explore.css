@@ -56,6 +56,63 @@ body {
     color: #8b5cf6;
 }
 
+/* Search Container */
+.search-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #f3f4f6;
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+}
+
+.search-container:focus-within {
+    background: #e5e7eb;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.search-input {
+    border: none;
+    background: transparent;
+    outline: none;
+    padding: 0.5rem;
+    font-size: 1rem;
+    width: 200px;
+    color: #333;
+    transition: width 0.3s ease;
+}
+
+.search-input:focus {
+    width: 250px;
+}
+
+.search-input::placeholder {
+    color: #9ca3af;
+}
+
+.search-button {
+    border: none;
+    color: white;
+    padding: 0.5rem 0.8rem;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.search-button:hover {
+    background: #7c3aed;
+    transform: scale(1.1);
+}
+
+.search-button:active {
+    transform: scale(0.95);
+}
+
 /* Hero Section */
 .hero-section {
     background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 50%, #a5b4fc 100%);
@@ -205,6 +262,54 @@ body {
     color: white;
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(139, 92, 246, 0.3);
+}
+
+.btn-like {
+    background: white;
+    color: #ef4444;
+    border: 2px solid #ef4444;
+    min-width: 100px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.btn-like:hover {
+    background: #fef2f2;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.3);
+}
+
+.btn-like.liked {
+    background: #ef4444;
+    color: white;
+}
+
+.btn-like.liked:hover {
+    background: #dc2626;
+}
+
+.heart-icon {
+    font-size: 1.2rem;
+}
+
+.like-count {
+    font-weight: bold;
+}
+
+.btn-comment {
+    background: transparent;
+    color: #10b981;
+    border: 2px solid #10b981;
+    min-width: 120px;
+}
+
+.btn-comment:hover {
+    background: #10b981;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
 }
 
 /* Footer */
@@ -435,3 +540,524 @@ body {
         max-width: 250px;
     }
 }
+
+/* Comment Section Styles */
+.btn-comment {
+    background: #10b981;
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-comment:hover {
+    background: #059669;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.comment-section {
+    margin-top: 2rem;
+    padding: 2rem;
+    background: #f9fafb;
+    border-radius: 12px;
+    border: 2px solid #e5e7eb;
+}
+
+.comment-section h4 {
+    color: #1f2937;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.comment-subtitle {
+    color: #6b7280;
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+}
+
+.comment-form {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.comment-name {
+    width: 100%;
+    padding: 0.8rem;
+    margin-bottom: 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.comment-name:focus {
+    outline: none;
+    border-color: #10b981;
+}
+
+.comment-text {
+    width: 100%;
+    padding: 0.8rem;
+    margin-bottom: 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    resize: vertical;
+    transition: border-color 0.3s ease;
+}
+
+.comment-text:focus {
+    outline: none;
+    border-color: #10b981;
+}
+
+.btn-submit-comment {
+    background: #10b981;
+    color: white;
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-submit-comment:hover {
+    background: #059669;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.comments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.no-comments {
+    text-align: center;
+    color: #9ca3af;
+    padding: 2rem;
+    font-style: italic;
+}
+
+.comment-item {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease;
+}
+
+.comment-item:hover {
+    transform: translateX(5px);
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.8rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.comment-author {
+    font-weight: 600;
+    color: #1f2937;
+    font-size: 1rem;
+}
+
+.comment-date {
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+
+.comment-content {
+    color: #374151;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.comment-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+}
+
+.btn-heart-comment {
+    background: #f3f4f6;
+    color: #6b7280;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.btn-heart-comment:hover {
+    background: #fef2f2;
+    color: #ef4444;
+    transform: scale(1.05);
+}
+
+.btn-heart-comment.hearted {
+    background: #fef2f2;
+    color: #ef4444;
+    font-weight: 600;
+}
+
+.btn-reply-comment {
+    background: #f3f4f6;
+    color: #6b7280;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-reply-comment:hover {
+    background: #dbeafe;
+    color: #2563eb;
+    transform: scale(1.05);
+}
+
+.btn-delete-comment {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-delete-comment:hover {
+    background: #dc2626;
+    transform: scale(1.05);
+}
+
+.btn-show-replies {
+    background: transparent;
+    color: #6b7280;
+    border: none;
+    padding: 0.5rem 0;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 0.5rem;
+    display: inline-block;
+}
+
+.btn-show-replies:hover {
+    color: #2563eb;
+    text-decoration: underline;
+}
+
+.btn-view-replies {
+    background: transparent;
+    color: #6b7280;
+    border: none;
+    padding: 0.5rem 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 0.5rem;
+    display: inline-block;
+}
+
+.btn-view-replies:hover {
+    color: #2563eb;
+}
+
+/* TikTok-Style Replies */
+.tiktok-replies-container {
+    margin-top: 1rem;
+    padding-left: 2.5rem;
+}
+
+.tiktok-reply-item {
+    margin-bottom: 1rem;
+    padding: 0.8rem 0;
+}
+
+.reply-main {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.reply-body {
+    color: #1f2937;
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+}
+
+.reply-author {
+    font-weight: 600;
+    color: #1f2937;
+    font-size: 0.95rem;
+    margin-right: 0.5rem;
+}
+
+.replying-to {
+    color: #2563eb;
+    font-weight: 500;
+    font-size: 0.85rem;
+    margin-right: 0.5rem;
+}
+
+.reply-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 0.3rem;
+}
+
+.reply-date {
+    color: #9ca3af;
+    font-size: 0.85rem;
+}
+
+.btn-tiktok-heart {
+    background: transparent;
+    border: none;
+    color: #6b7280;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0.2rem 0.5rem;
+}
+
+.btn-tiktok-heart:hover {
+    color: #ef4444;
+}
+
+.btn-tiktok-heart.hearted {
+    color: #ef4444;
+    font-weight: 700;
+}
+
+.btn-tiktok-heart.hearted::before {
+    content: '❤️ ';
+}
+
+.btn-tiktok-heart:not(.hearted)::before {
+    content: '🤍 ';
+}
+
+.btn-tiktok-reply {
+    background: transparent;
+    border: none;
+    color: #6b7280;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0.2rem 0.5rem;
+}
+
+.btn-tiktok-reply:hover {
+    color: #2563eb;
+}
+
+/* Reply Box Styles */
+.reply-box {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #f9fafb;
+    border-radius: 8px;
+}
+
+.reply-name {
+    width: 100%;
+    padding: 0.6rem;
+    margin-bottom: 0.8rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: border-color 0.3s ease;
+}
+
+.reply-name:focus {
+    outline: none;
+    border-color: #2563eb;
+}
+
+.reply-text {
+    width: 100%;
+    padding: 0.6rem;
+    margin-bottom: 0.8rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    resize: vertical;
+    transition: border-color 0.3s ease;
+}
+
+.reply-text:focus {
+    outline: none;
+    border-color: #2563eb;
+}
+
+.reply-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-submit-reply {
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-submit-reply:hover {
+    background: #1d4ed8;
+    transform: translateY(-2px);
+}
+
+.btn-cancel-reply {
+    background: #6b7280;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-cancel-reply:hover {
+    background: #4b5563;
+}
+
+/* Replies Container */
+.replies-container {
+    margin-top: 1rem;
+    margin-left: 2rem;
+    padding-left: 1rem;
+}
+
+.reply-item {
+    background: #f9fafb;
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 0.8rem;
+}
+
+.reply-item .comment-header {
+    margin-bottom: 0.5rem;
+}
+
+.reply-item .comment-content {
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.reply-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.btn-heart-reply {
+    background: #f3f4f6;
+    color: #6b7280;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.btn-heart-reply:hover {
+    background: #fef2f2;
+    color: #ef4444;
+    transform: scale(1.05);
+}
+
+.btn-heart-reply.hearted {
+    background: #fef2f2;
+    color: #ef4444;
+    font-weight: 600;
+}
+
+.btn-reply-to-reply {
+    background: #f3f4f6;
+    color: #6b7280;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-reply-to-reply:hover {
+    background: #dbeafe;
+    color: #2563eb;
+    transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+    .comment-section {
+        padding: 1.5rem;
+    }
+    
+    .comment-form {
+        padding: 1rem;
+    }
+    
+    .comment-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .tiktok-replies-container {
+        padding-left: 1rem;
+    }
+    
+    .comment-actions {
+        flex-direction: column;
+    }
+}
+
