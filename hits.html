@@ -60,6 +60,13 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl0ZmdwYXlxY25vZHBvcWdieGNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM3MDUyMzQsImV4cCI6MjA3OTI4MTIzNH0.Hy7eJkL-u_pVoT_QqHhgeAIdFe620y7IYlITed9So6o';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        // Prevent back navigation after logout
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+
         // Check if user is logged in
         supabase.auth.getSession().then(({ data: { session } }) => {
             if (!session) {
