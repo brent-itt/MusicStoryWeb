@@ -50,7 +50,15 @@
         <p>&copy; 2025 Musicstory. Celebrating Filipino Music.</p>
     </footer>
 
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <script>
+        // Initialize Supabase
+        const SUPABASE_URL = 'https://ytfgpayqcnodpoqgbxcg.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl0ZmdwYXlxY25vZHBvcWdieGNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM3MDUyMzQsImV4cCI6MjA3OTI4MTIzNH0.Hy7eJkL-u_pVoT_QqHhgeAIdFe620y7IYlITed9So6o';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
         // Song data with total likes tracking
         const songs = [
             {
@@ -69,22 +77,31 @@
             }
         ];
 
-        function getTotalLikes(songId) {
-            const likes = localStorage.getItem(`song_likes_${songId}`);
-            if (!likes) return 0;
+        async function getTotalLikes(songId) {
+            const { data, error } = await supabase
+                .from('song_likes')
+                .select('count')
+                .eq('song_id', songId)
+                .single();
             
-            const likesData = JSON.parse(likes);
-            return likesData.count || 0;
+            if (error && error.code !== 'PGRST116') {
+                console.error('Error fetching likes:', error);
+                return 0;
+            }
+            
+            return data?.count || 0;
         }
 
-        function loadTopHits() {
+        async function loadTopHits() {
             const hitsList = document.getElementById('hits-list');
             
             // Calculate total likes for each song
-            const songsWithLikes = songs.map(song => ({
+            const songsWithLikesPromises = songs.map(async song => ({
                 ...song,
-                totalLikes: getTotalLikes(song.id)
+                totalLikes: await getTotalLikes(song.id)
             }));
+            
+            const songsWithLikes = await Promise.all(songsWithLikesPromises);
             
             // Sort by total likes (descending)
             songsWithLikes.sort((a, b) => b.totalLikes - a.totalLikes);
