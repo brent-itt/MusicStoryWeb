@@ -71,7 +71,6 @@
                         <p class="comment-subtitle">Express what this song means to you</p>
                         
                         <div class="comment-form">
-                            <input type="text" class="comment-name" placeholder="Your name" />
                             <textarea class="comment-text" placeholder="Share your thoughts about the story behind this music..." rows="4"></textarea>
                             <button class="btn-submit-comment" onclick="submitComment('lovestory')">Post Comment</button>
                         </div>
@@ -112,7 +111,6 @@
                         <p class="comment-subtitle">Express what this song means to you</p>
                         
                         <div class="comment-form">
-                            <input type="text" class="comment-name" placeholder="Your name" />
                             <textarea class="comment-text" placeholder="Share your thoughts about the story behind this music..." rows="4"></textarea>
                             <button class="btn-submit-comment" onclick="submitComment('pahina')">Post Comment</button>
                         </div>
@@ -300,13 +298,18 @@
         }
 
         async function getUserLikeStatus(songId) {
-            const userId = localStorage.getItem('user_id') || generateUserId();
+            const userId = generateUserId();
             const { data, error } = await supabase
                 .from('user_song_likes')
                 .select('*')
                 .eq('song_id', songId)
                 .eq('user_id', userId)
-                .single();
+                .maybeSingle();
+            
+            if (error) {
+                console.error('Error checking like status:', error);
+                return false;
+            }
             
             return data ? true : false;
         }
@@ -331,77 +334,119 @@
             const heartIcon = button.querySelector('.heart-icon');
             const likeCount = button.querySelector('.like-count');
             
-            const isLiked = await getUserLikeStatus(songId);
+            // Disable button during processing
+            button.disabled = true;
             
-            if (isLiked) {
-                // Unlike
-                await supabase
-                    .from('user_song_likes')
-                    .delete()
-                    .eq('song_id', songId)
-                    .eq('user_id', userId);
+            try {
+                const isLiked = await getUserLikeStatus(songId);
                 
-                const { data: currentData } = await supabase
-                    .from('song_likes')
-                    .select('count')
-                    .eq('song_id', songId)
-                    .single();
-                
-                await supabase
-                    .from('song_likes')
-                    .upsert({ 
-                        song_id: songId, 
-                        count: Math.max(0, (currentData?.count || 1) - 1) 
-                    });
-                
-                button.classList.remove('liked');
-                heartIcon.textContent = '🤍';
-            } else {
-                // Like
-                await supabase
-                    .from('user_song_likes')
-                    .insert({ song_id: songId, user_id: userId });
-                
-                const { data: currentData } = await supabase
-                    .from('song_likes')
-                    .select('count')
-                    .eq('song_id', songId)
-                    .single();
-                
-                await supabase
-                    .from('song_likes')
-                    .upsert({ 
-                        song_id: songId, 
-                        count: (currentData?.count || 0) + 1 
-                    });
-                
-                button.classList.add('liked');
-                heartIcon.textContent = '❤️';
+                if (isLiked) {
+                    // Unlike - Update UI immediately
+                    button.classList.remove('liked');
+                    heartIcon.textContent = '🤍';
+                    
+                    // Delete user like
+                    const { error: deleteError } = await supabase
+                        .from('user_song_likes')
+                        .delete()
+                        .eq('song_id', songId)
+                        .eq('user_id', userId);
+                    
+                    if (deleteError) throw deleteError;
+                    
+                    // Get current count
+                    const { data: currentData } = await supabase
+                        .from('song_likes')
+                        .select('count')
+                        .eq('song_id', songId)
+                        .maybeSingle();
+                    
+                    // Update count
+                    const newCount = Math.max(0, (currentData?.count || 1) - 1);
+                    const { error: updateError } = await supabase
+                        .from('song_likes')
+                        .upsert({ 
+                            song_id: songId, 
+                            count: newCount
+                        });
+                    
+                    if (updateError) throw updateError;
+                    likeCount.textContent = newCount;
+                    
+                } else {
+                    // Like - Update UI immediately
+                    button.classList.add('liked');
+                    heartIcon.textContent = '❤️';
+                    
+                    // Insert user like
+                    const { error: insertError } = await supabase
+                        .from('user_song_likes')
+                        .insert({ song_id: songId, user_id: userId });
+                    
+                    if (insertError) throw insertError;
+                    
+                    // Get current count
+                    const { data: currentData } = await supabase
+                        .from('song_likes')
+                        .select('count')
+                        .eq('song_id', songId)
+                        .maybeSingle();
+                    
+                    // Update count
+                    const newCount = (currentData?.count || 0) + 1;
+                    const { error: updateError } = await supabase
+                        .from('song_likes')
+                        .upsert({ 
+                            song_id: songId, 
+                            count: newCount
+                        });
+                    
+                    if (updateError) throw updateError;
+                    likeCount.textContent = newCount;
+                }
+            } catch (error) {
+                console.error('Error toggling like:', error);
+                // Reload to get correct state
+                const likesData = await getSongLikes(songId);
+                const isLiked = await getUserLikeStatus(songId);
+                likeCount.textContent = likesData.count || 0;
+                if (isLiked) {
+                    button.classList.add('liked');
+                    heartIcon.textContent = '❤️';
+                } else {
+                    button.classList.remove('liked');
+                    heartIcon.textContent = '🤍';
+                }
+            } finally {
+                // Re-enable button
+                button.disabled = false;
             }
-            
-            const likesData = await getSongLikes(songId);
-            likeCount.textContent = likesData.count || 0;
         }
 
         // Load like counts on page load
         async function loadSongLikes() {
             const songs = ['lovestory', 'pahina'];
             for (const songId of songs) {
-                const likesData = await getSongLikes(songId);
-                const isLiked = await getUserLikeStatus(songId);
-                const button = document.getElementById(`like-${songId}`);
-                
-                if (button) {
-                    const heartIcon = button.querySelector('.heart-icon');
-                    const likeCount = button.querySelector('.like-count');
+                try {
+                    const likesData = await getSongLikes(songId);
+                    const isLiked = await getUserLikeStatus(songId);
+                    const button = document.getElementById(`like-${songId}`);
                     
-                    likeCount.textContent = likesData.count || 0;
-                    if (isLiked) {
-                        button.classList.add('liked');
-                        heartIcon.textContent = '❤️';
-                    } else {
-                        heartIcon.textContent = '🤍';
+                    if (button) {
+                        const heartIcon = button.querySelector('.heart-icon');
+                        const likeCount = button.querySelector('.like-count');
+                        
+                        likeCount.textContent = likesData.count || 0;
+                        if (isLiked) {
+                            button.classList.add('liked');
+                            heartIcon.textContent = '❤️';
+                        } else {
+                            button.classList.remove('liked');
+                            heartIcon.textContent = '🤍';
+                        }
                     }
+                } catch (error) {
+                    console.error('Error loading likes for', songId, error);
                 }
             }
         }
@@ -468,17 +513,15 @@
         }
 
         async function submitComment(songId) {
-            const nameInput = document.querySelector(`#${songId}-comments .comment-name`);
             const textInput = document.querySelector(`#${songId}-comments .comment-text`);
             
-            const name = nameInput.value.trim();
             const text = textInput.value.trim();
             
-            // If user is logged in, use their email as name
-            const displayName = currentUser ? currentUser.email.split('@')[0] : name;
+            // Use logged-in user's email username
+            const displayName = currentUser ? currentUser.email.split('@')[0] : 'Anonymous';
             
-            if (!displayName || !text) {
-                alert('Please enter your name and comment!');
+            if (!text) {
+                alert('Please enter your comment!');
                 return;
             }
             
@@ -494,7 +537,6 @@
             
             await saveComment(songId, newComment);
             
-            nameInput.value = '';
             textInput.value = '';
             
             await loadComments(songId);
@@ -558,7 +600,6 @@
                     </div>
                     ${showRepliesButton}
                     <div class="reply-box" id="${songId}-reply-${comment.id}" style="display: none;">
-                        <input type="text" class="reply-name" placeholder="Your name" />
                         <textarea class="reply-text" placeholder="Write your reply..." rows="2"></textarea>
                         <input type="hidden" class="replying-to-name" value="" />
                         <div class="reply-buttons">
@@ -617,16 +658,17 @@
 
         async function submitReply(songId, commentId) {
             const replyBox = document.getElementById(`${songId}-reply-${commentId}`);
-            const nameInput = replyBox.querySelector('.reply-name');
             const textInput = replyBox.querySelector('.reply-text');
             const replyingToInput = replyBox.querySelector('.replying-to-name');
             
-            const name = nameInput.value.trim();
             const text = textInput.value.trim();
             const replyingTo = replyingToInput.value;
             
-            if (!name || !text) {
-                alert('Please enter your name and reply!');
+            // Use logged-in user's email username
+            const name = currentUser ? currentUser.email.split('@')[0] : 'Anonymous';
+            
+            if (!text) {
+                alert('Please enter your reply!');
                 return;
             }
             
