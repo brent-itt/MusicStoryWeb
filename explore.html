@@ -218,8 +218,84 @@
                     await supabase.auth.signOut();
                     window.location.href = 'login.html';
                 };
+                
+                // Set up real-time subscriptions after authentication
+                setupRealtimeSubscriptions();
             }
         });
+
+        // Real-time subscriptions for live updates
+        function setupRealtimeSubscriptions() {
+            // Subscribe to song_likes changes
+            supabase
+                .channel('song_likes_changes')
+                .on('postgres_changes', 
+                    { event: '*', schema: 'public', table: 'song_likes' },
+                    async (payload) => {
+                        console.log('Like change detected:', payload);
+                        const songId = payload.new.song_id || payload.old?.song_id;
+                        if (songId) {
+                            await updateLikeDisplay(songId);
+                        }
+                    }
+                )
+                .subscribe();
+
+            // Subscribe to user_song_likes changes
+            supabase
+                .channel('user_likes_changes')
+                .on('postgres_changes',
+                    { event: '*', schema: 'public', table: 'user_song_likes' },
+                    async (payload) => {
+                        console.log('User like change detected:', payload);
+                        const songId = payload.new?.song_id || payload.old?.song_id;
+                        if (songId) {
+                            await updateLikeDisplay(songId);
+                        }
+                    }
+                )
+                .subscribe();
+
+            // Subscribe to comments changes
+            supabase
+                .channel('comments_changes')
+                .on('postgres_changes',
+                    { event: '*', schema: 'public', table: 'comments' },
+                    async (payload) => {
+                        console.log('Comment change detected:', payload);
+                        const songId = payload.new?.song_id || payload.old?.song_id;
+                        if (songId) {
+                            const commentSection = document.getElementById(`${songId}-comments`);
+                            // Only reload if comments section is visible
+                            if (commentSection && commentSection.style.display !== 'none') {
+                                await loadComments(songId);
+                            }
+                        }
+                    }
+                )
+                .subscribe();
+        }
+
+        // Update like display in real-time
+        async function updateLikeDisplay(songId) {
+            const button = document.getElementById(`like-${songId}`);
+            if (!button) return;
+            
+            const heartIcon = button.querySelector('.heart-icon');
+            const likeCount = button.querySelector('.like-count');
+            
+            const likesData = await getSongLikes(songId);
+            const isLiked = await getUserLikeStatus(songId);
+            
+            likeCount.textContent = likesData.count || 0;
+            if (isLiked) {
+                button.classList.add('liked');
+                heartIcon.textContent = '❤️';
+            } else {
+                button.classList.remove('liked');
+                heartIcon.textContent = '🤍';
+            }
+        }
 
         // Search functionality
         const searchInput = document.querySelector('.search-input');
