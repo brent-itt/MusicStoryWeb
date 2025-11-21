@@ -455,7 +455,8 @@
                 created_at: new Date().toISOString(),
                 hearts: 0,
                 replies: [],
-                hearted_by: []
+                hearted_by: [],
+                user_id: generateUserId()
             };
             
             await saveComment(songId, newComment);
@@ -520,7 +521,7 @@
                             ❤️ ${comment.hearts || 0}
                         </button>
                         <button class="btn-reply-comment" onclick="showReplyBox('${songId}', '${comment.id}')">Reply</button>
-                        <button class="btn-delete-comment" onclick="deleteComment('${songId}', '${comment.id}')">Delete</button>
+                        ${comment.user_id === generateUserId() ? `<button class="btn-delete-comment" onclick="deleteComment('${songId}', '${comment.id}')">Delete</button>` : ''}
                     </div>
                     ${showRepliesButton}
                     <div class="reply-box" id="${songId}-reply-${comment.id}" style="display: none;">
