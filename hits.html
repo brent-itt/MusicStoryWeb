@@ -60,6 +60,15 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl0ZmdwYXlxY25vZHBvcWdieGNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM3MDUyMzQsImV4cCI6MjA3OTI4MTIzNH0.Hy7eJkL-u_pVoT_QqHhgeAIdFe620y7IYlITed9So6o';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        // Check if user is logged in
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (!session) {
+                // Not logged in, redirect to login page
+                window.location.href = 'login.html';
+                return;
+            }
+        });
+
         // Song data with total likes tracking
         const songs = [
             {
