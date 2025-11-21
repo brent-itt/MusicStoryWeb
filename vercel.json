@@ -2,6 +2,10 @@
     "routes": [
         {
             "src": "/",
+            "dest": "/login.html"
+        },
+        {
+            "src": "/home",
             "dest": "/index.html"
         },
         {
@@ -15,10 +19,6 @@
         {
             "src": "/login",
             "dest": "/login.html"
-        },
-        {
-            "src": "/home",
-            "dest": "/index.html"
         },
         {
             "src": "/pics/(.*)",
