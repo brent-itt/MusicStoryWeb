@@ -193,24 +193,44 @@
                     // Sign up
                     const { data, error } = await supabase.auth.signUp({
                         email: email,
-                        password: password
+                        password: password,
+                        options: {
+                            emailRedirectTo: 'https://music-story-web-ygjw.vercel.app/login.html'
+                        }
                     });
 
                     if (error) throw error;
 
-                    successMessage.textContent = '✅ Account created! A confirmation email has been sent to ' + email + '. Please check your inbox and verify your email, then you can login.';
-                    successMessage.style.display = 'block';
-                    
-                    // Switch to login mode after 5 seconds
-                    setTimeout(() => {
-                        isLoginMode = true;
-                        formTitle.textContent = 'Login to Musicstory';
-                        submitBtn.textContent = 'Login';
-                        toggleText.innerHTML = 'Don\'t have an account? <a href="#" id="toggle-link">Sign up</a>';
-                        document.getElementById('toggle-link').addEventListener('click', toggleLink.onclick);
-                        successMessage.style.display = 'none';
+                    // Check if email confirmation is required
+                    if (data.user && data.user.identities && data.user.identities.length === 0) {
+                        // User already exists
+                        errorMessage.textContent = 'This email is already registered. Please login instead.';
+                        errorMessage.style.display = 'block';
                         submitBtn.disabled = false;
-                    }, 5000);
+                        submitBtn.textContent = 'Sign Up';
+                    } else if (data.session) {
+                        // Auto-confirmed, can login immediately
+                        successMessage.textContent = '✅ Account created successfully! Redirecting...';
+                        successMessage.style.display = 'block';
+                        setTimeout(() => {
+                            window.location.href = 'explore.html';
+                        }, 1500);
+                    } else {
+                        // Email confirmation required
+                        successMessage.textContent = '✅ Account created! Please check your email (' + email + ') for a confirmation link. After confirming, you can login.';
+                        successMessage.style.display = 'block';
+                        
+                        // Switch to login mode after 5 seconds
+                        setTimeout(() => {
+                            isLoginMode = true;
+                            formTitle.textContent = 'Login to Musicstory';
+                            submitBtn.textContent = 'Login';
+                            toggleText.innerHTML = 'Don\'t have an account? <a href="#" id="toggle-link">Sign up</a>';
+                            document.getElementById('toggle-link').addEventListener('click', toggleLink.onclick);
+                            successMessage.style.display = 'none';
+                            submitBtn.disabled = false;
+                        }, 5000);
+                    }
                 }
             } catch (error) {
                 errorMessage.textContent = error.message;
