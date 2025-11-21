@@ -482,7 +482,7 @@
                 const time = commentDate.toLocaleTimeString();
                 const replyCount = comment.replies ? comment.replies.length : 0;
                 const showRepliesButton = replyCount > 0 
-                    ? `<button class="btn-view-replies" onclick="toggleReplies('${songId}', ${index})">
+                    ? `<button class="btn-view-replies" onclick="toggleReplies('${songId}', '${comment.id}')">
                          View ${replyCount} ${replyCount === 1 ? 'reply' : 'replies'}
                        </button>`
                     : '';
@@ -499,10 +499,10 @@
                             <div class="reply-body">${reply.text}</div>
                             <div class="reply-meta">
                                 <span class="reply-date">${reply.date}</span>
-                                <button class="btn-tiktok-heart ${reply.hearted ? 'hearted' : ''}" onclick="toggleReplyHeart('${songId}', ${index}, ${replyIndex})">
+                                <button class="btn-tiktok-heart ${reply.hearted ? 'hearted' : ''}" onclick="toggleReplyHeart('${songId}', '${comment.id}', ${replyIndex})">
                                     ${reply.hearts || 0}
                                 </button>
-                                <button class="btn-tiktok-reply" onclick="showTikTokReplyBox('${songId}', ${index}, ${replyIndex}, '${escapedName}')">Reply</button>
+                                <button class="btn-tiktok-reply" onclick="showTikTokReplyBox('${songId}', '${comment.id}', ${replyIndex}, '${escapedName}')">Reply</button>
                             </div>
                         </div>
                     `;
