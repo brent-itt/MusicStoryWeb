@@ -201,6 +201,14 @@
 
         // Check authentication and update UI
         let currentUser = null;
+        
+        // Prevent back navigation after logout
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+        
         supabase.auth.getSession().then(({ data: { session } }) => {
             if (!session) {
                 // Not logged in, redirect to login page
@@ -215,8 +223,16 @@
                 authLink.href = '#';
                 authLink.onclick = async (e) => {
                     e.preventDefault();
+                    // Sign out from Supabase
                     await supabase.auth.signOut();
-                    window.location.href = 'login.html';
+                    // Clear local storage
+                    localStorage.clear();
+                    // Clear session storage
+                    sessionStorage.clear();
+                    // Redirect and prevent back navigation
+                    window.location.replace('login.html');
+                    // Prevent browser from caching this page
+                    window.history.pushState(null, '', window.location.href);
                 };
                 
                 // Set up real-time subscriptions after authentication
