@@ -13,6 +13,10 @@
             "dest": "/hits.html"
         },
         {
+            "src": "/login",
+            "dest": "/login.html"
+        },
+        {
             "src": "/home",
             "dest": "/index.html"
         },
