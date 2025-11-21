@@ -204,6 +204,12 @@
         // Check authentication and update UI
         let currentUser = null;
         supabase.auth.getSession().then(({ data: { session } }) => {
+            if (!session) {
+                // Not logged in, redirect to login page
+                window.location.href = 'login.html';
+                return;
+            }
+            
             if (session) {
                 currentUser = session.user;
                 const authLink = document.getElementById('auth-link');
