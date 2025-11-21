@@ -22,6 +22,9 @@
                 <input type="text" class="search-input" placeholder="Search songs...">
                 <button class="search-button">Search</button>
             </div>
+            <div class="user-info" id="user-info" style="margin-left: 20px; color: white;">
+                <a href="login.html" class="nav-link" id="auth-link">Login</a>
+            </div>
         </div>
     </header>
 
@@ -198,6 +201,22 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl0ZmdwYXlxY25vZHBvcWdieGNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM3MDUyMzQsImV4cCI6MjA3OTI4MTIzNH0.Hy7eJkL-u_pVoT_QqHhgeAIdFe620y7IYlITed9So6o';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        // Check authentication and update UI
+        let currentUser = null;
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session) {
+                currentUser = session.user;
+                const authLink = document.getElementById('auth-link');
+                authLink.textContent = `Logout (${session.user.email})`;
+                authLink.href = '#';
+                authLink.onclick = async (e) => {
+                    e.preventDefault();
+                    await supabase.auth.signOut();
+                    window.location.href = 'login.html';
+                };
+            }
+        });
+
         // Search functionality
         const searchInput = document.querySelector('.search-input');
         const searchButton = document.querySelector('.search-button');
@@ -287,9 +306,14 @@
         }
 
         function generateUserId() {
+            // Use authenticated user ID if logged in, otherwise use anonymous ID
+            if (currentUser) {
+                return currentUser.id;
+            }
+            
             let userId = localStorage.getItem('user_id');
             if (!userId) {
-                userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                userId = 'anon_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
                 localStorage.setItem('user_id', userId);
             }
             return userId;
@@ -444,13 +468,16 @@
             const name = nameInput.value.trim();
             const text = textInput.value.trim();
             
-            if (!name || !text) {
+            // If user is logged in, use their email as name
+            const displayName = currentUser ? currentUser.email.split('@')[0] : name;
+            
+            if (!displayName || !text) {
                 alert('Please enter your name and comment!');
                 return;
             }
             
             const newComment = {
-                name: name,
+                name: displayName,
                 text: text,
                 created_at: new Date().toISOString(),
                 hearts: 0,
