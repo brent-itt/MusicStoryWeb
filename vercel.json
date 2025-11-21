@@ -1,24 +1,24 @@
 {
     "routes": [
         {
-            "source": "/",
-            "destination": "/index.html"
+            "src": "/",
+            "dest": "/index.html"
         },
         {
-            "source": "/explore",
-            "destination": "/explore.html"
+            "src": "/explore",
+            "dest": "/explore.html"
         },
         {
-            "source": "/hits",
-            "destination": "/hits.html"
+            "src": "/hits",
+            "dest": "/hits.html"
         },
         {
-            "source": "/home",
-            "destination": "/index.html"
+            "src": "/home",
+            "dest": "/index.html"
         },
         {
-            "source": "/pics/(.*)",
-            "destination": "/pics/$1"
+            "src": "/pics/(.*)",
+            "dest": "/pics/$1"
         }
     ]
 }
