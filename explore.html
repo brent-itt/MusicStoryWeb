@@ -514,6 +514,7 @@
 
         async function submitComment(songId) {
             const textInput = document.querySelector(`#${songId}-comments .comment-text`);
+            const submitButton = document.querySelector(`#${songId}-comments .btn-submit-comment`);
             
             const text = textInput.value.trim();
             
@@ -525,21 +526,31 @@
                 return;
             }
             
-            const newComment = {
-                name: displayName,
-                text: text,
-                created_at: new Date().toISOString(),
-                hearts: 0,
-                replies: [],
-                hearted_by: [],
-                user_id: generateUserId()
-            };
+            // Disable button to prevent spam
+            submitButton.disabled = true;
+            submitButton.textContent = 'Posting...';
             
-            await saveComment(songId, newComment);
-            
-            textInput.value = '';
-            
-            await loadComments(songId);
+            try {
+                const newComment = {
+                    name: displayName,
+                    text: text,
+                    created_at: new Date().toISOString(),
+                    hearts: 0,
+                    replies: [],
+                    hearted_by: [],
+                    user_id: generateUserId()
+                };
+                
+                await saveComment(songId, newComment);
+                
+                textInput.value = '';
+                
+                await loadComments(songId);
+            } finally {
+                // Re-enable button
+                submitButton.disabled = false;
+                submitButton.textContent = 'Post Comment';
+            }
         }
 
         async function loadComments(songId) {
@@ -660,6 +671,7 @@
             const replyBox = document.getElementById(`${songId}-reply-${commentId}`);
             const textInput = replyBox.querySelector('.reply-text');
             const replyingToInput = replyBox.querySelector('.replying-to-name');
+            const submitButton = replyBox.querySelector('.btn-submit-reply');
             
             const text = textInput.value.trim();
             const replyingTo = replyingToInput.value;
@@ -672,38 +684,47 @@
                 return;
             }
             
-            const comments = await getComments(songId);
-            const comment = comments.find(c => c.id == commentId);
+            // Disable button to prevent spam
+            submitButton.disabled = true;
+            submitButton.textContent = 'Posting...';
             
-            if (!comment) return;
-            
-            const newReply = {
-                name: name,
-                text: text,
-                replyingTo: replyingTo || '',
-                date: new Date().toLocaleDateString(),
-                time: new Date().toLocaleTimeString(),
-                hearts: 0,
-                hearted: false
-            };
-            
-            const updatedReplies = [...(comment.replies || []), newReply];
-            
-            await updateComment(commentId, { replies: updatedReplies });
-            
-            nameInput.value = '';
-            textInput.value = '';
-            hideReplyBox(songId, commentId);
-            
-            await loadComments(songId);
-            
-            // Automatically show replies after posting
-            setTimeout(() => {
-                const repliesContainer = document.getElementById(`${songId}-replies-${commentId}`);
-                if (repliesContainer) {
-                    repliesContainer.style.display = 'block';
-                }
-            }, 100);
+            try {
+                const comments = await getComments(songId);
+                const comment = comments.find(c => c.id == commentId);
+                
+                if (!comment) return;
+                
+                const newReply = {
+                    name: name,
+                    text: text,
+                    replyingTo: replyingTo || '',
+                    date: new Date().toLocaleDateString(),
+                    time: new Date().toLocaleTimeString(),
+                    hearts: 0,
+                    hearted: false
+                };
+                
+                const updatedReplies = [...(comment.replies || []), newReply];
+                
+                await updateComment(commentId, { replies: updatedReplies });
+                
+                textInput.value = '';
+                hideReplyBox(songId, commentId);
+                
+                await loadComments(songId);
+                
+                // Automatically show replies after posting
+                setTimeout(() => {
+                    const repliesContainer = document.getElementById(`${songId}-replies-${commentId}`);
+                    if (repliesContainer) {
+                        repliesContainer.style.display = 'block';
+                    }
+                }, 100);
+            } finally {
+                // Re-enable button
+                submitButton.disabled = false;
+                submitButton.textContent = 'Post Reply';
+            }
         }
 
         function toggleReplies(songId, commentId) {
