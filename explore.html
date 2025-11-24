@@ -82,7 +82,7 @@
                 </div>
             </div>
             
-            <!-- Pahina by Cup of Joe -->
+           
             <div class="featured-song">
                 <div class="song-image">
                     <img src="./pics/OIP.jpeg" alt="Pahina by Cup of Joe" onerror="this.src='https://via.placeholder.com/200x200?text=Pahina'" />
@@ -105,7 +105,7 @@
                         <button class="btn btn-comment" onclick="toggleComments('pahina')">Comments</button>
                     </div>
                     
-                    <!-- Comment Section for Pahina -->
+                    
                     <div id="pahina-comments" class="comment-section" style="display: none;">
                         <h4>Share Your Understanding</h4>
                         <p class="comment-subtitle">Express what this song means to you</p>
@@ -116,7 +116,7 @@
                         </div>
                         
                         <div class="comments-list" id="pahina-comments-list">
-                            <!-- Comments will appear here -->
+                          
                         </div>
                     </div>
                 </div>
@@ -124,8 +124,7 @@
         </div>
     </section>
 
-    <!-- Modals -->
-    <!-- Love Story Modal -->
+    
     <div id="lovestory-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -155,7 +154,7 @@
         </div>
     </div>
 
-    <!-- Pahina Modal -->
+    
     <div id="pahina-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -223,15 +222,10 @@
                 authLink.href = '#';
                 authLink.onclick = async (e) => {
                     e.preventDefault();
-                    // Sign out from Supabase
                     await supabase.auth.signOut();
-                    // Clear local storage
                     localStorage.clear();
-                    // Clear session storage
                     sessionStorage.clear();
-                    // Redirect and prevent back navigation
                     window.location.replace('login.html');
-                    // Prevent browser from caching this page
                     window.history.pushState(null, '', window.location.href);
                 };
                 
@@ -313,12 +307,12 @@
             }
         }
 
-        // Search functionality
+    
         const searchInput = document.querySelector('.search-input');
         const searchButton = document.querySelector('.search-button');
         const featuredSongs = document.querySelectorAll('.featured-song');
 
-        // Function to perform search
+       
         function performSearch() {
             const searchTerm = searchInput.value.toLowerCase().trim();
             
@@ -327,7 +321,7 @@
                 const artist = song.querySelector('.artist-name').textContent.toLowerCase();
                 const description = song.querySelector('.song-description').textContent.toLowerCase();
                 
-                // Check if search term matches title, artist, or description
+               
                 if (title.includes(searchTerm) || artist.includes(searchTerm) || description.includes(searchTerm)) {
                     song.style.display = 'flex';
                     song.style.animation = 'fadeIn 0.5s ease';
@@ -336,7 +330,7 @@
                 }
             });
 
-            // If search is empty, show all songs
+           
             if (searchTerm === '') {
                 featuredSongs.forEach(song => {
                     song.style.display = 'flex';
@@ -344,7 +338,7 @@
             }
         }
 
-        // Search on button click
+       
         searchButton.addEventListener('click', performSearch);
 
         // Search on Enter key press
@@ -357,7 +351,7 @@
         // Real-time search as user types
         searchInput.addEventListener('input', performSearch);
 
-        // Add fade-in animation
+       
         const style = document.createElement('style');
         style.textContent = `
             @keyframes fadeIn {
@@ -853,7 +847,7 @@
         }
 
         function toggleReplyHeart(songId, commentId, replyIndex) {
-            // Reply hearts can be implemented similarly with nested updates
+
             console.log('Reply heart toggled');
         }
 
